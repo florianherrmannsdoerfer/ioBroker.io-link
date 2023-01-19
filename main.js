@@ -301,7 +301,7 @@ const getData = async (endpoint, iolinkport) => {
 				write: false
 			}
 		});
-		adapter.setState(`${idProcessData}.flowrate`, humidity, true);
+		adapter.setState(`${idProcessData}.flowrate`, humiditySub, true);
 
 		adapter.setObjectNotExists(`${idProcessData}.temperature`, {
 			type: 'state',
@@ -315,7 +315,7 @@ const getData = async (endpoint, iolinkport) => {
 				write: false
 			}
 		});
-		adapter.setState(`${idProcessData}.temperature`, temp, true);
+		adapter.setState(`${idProcessData}.temperature`, tempSub, true);
 
 		adapter.setObjectNotExists(`${idProcessData}.total`, {
 			type: 'state',
