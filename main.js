@@ -274,7 +274,7 @@ const getData = async (endpoint, iolinkport) => {
 		});
 		
 		let bytes = hexToBytes(await getValue(endpoint, requestSensorData));
-		let temperatureValue = (byteArrayToNumber([bytes[4], bytes[5]]));
+		let temperatureValue = (byteArrayToNumber([bytes[5], bytes[4]]));
 		let humidityValue = (byteArrayToNumber([bytes[0], bytes[1]])>>2) * 0.1;
 		let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]])
 
@@ -287,7 +287,7 @@ const getData = async (endpoint, iolinkport) => {
 			common: {
 				name: 'FlowRate',
 				role: 'value',
-				type: 'string',
+				type: 'number',
 				value: 1,
 				unit: 'l/min',
 				read: true,
@@ -753,7 +753,7 @@ function byteArrayToNumber(byteArray) {
     }
 
     return value;
-};
+}
 
 //Convert a byte array to a float32
 function byteArrayToFloat(byteArray) {
@@ -765,7 +765,7 @@ function byteArrayToFloat(byteArray) {
     });
 
     return view.getFloat32(0);
-};
+}
 
 // is called when adapter shuts down
 adapter.on('unload', function (callback) {
