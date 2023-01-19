@@ -287,7 +287,7 @@ const getData = async (endpoint, iolinkport) => {
 			common: {
 				name: 'FlowRate',
 				role: 'value',
-				type: 'number',
+				type: 'string',
 				value: bytes,
 				unit: 'l/min',
 				read: true,
