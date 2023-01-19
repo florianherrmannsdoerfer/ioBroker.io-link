@@ -278,6 +278,9 @@ const getData = async (endpoint, iolinkport) => {
 		let humidityValue = (byteArrayToNumber([bytes[0], bytes[1]])>>2) * 0.1;
 		let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]])
 
+		let test1 = (byteArrayToNumber([bytes[4], bytes[5]]));
+		let test2 = (byteArrayToNumber([bytes[0], bytes[1]]));
+
 		let out1Value = (bytes[7] & 0x01) === 0x01;
 		let out2Value = (bytes[7] & 0x02) === 0x02;
 
@@ -302,7 +305,7 @@ const getData = async (endpoint, iolinkport) => {
 				name: 'Temperature',
 				role: 'value.temperature',
 				type: 'number',
-				value: (byteArrayToNumber([bytes[4], bytes[5]])),
+				value: test1,
 				unit: '°C',
 				read: true,
 				write: false
@@ -316,7 +319,7 @@ const getData = async (endpoint, iolinkport) => {
 				name: 'Total',
 				role: 'value',
 				type: 'number',
-				value: (byteArrayToNumber([bytes[0], bytes[1]])),
+				value: test2,
 				unit: 'l',
 				read: true,
 				write: false
