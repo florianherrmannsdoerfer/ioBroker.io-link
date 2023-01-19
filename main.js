@@ -287,7 +287,7 @@ const getData = async (endpoint, iolinkport) => {
 			common: {
 				name: 'FlowRate',
 				role: 'value',
-				type: 'string',
+				type: 'number',
 				value: 1,
 				unit: 'l/min',
 				read: true,
@@ -753,7 +753,7 @@ function byteArrayToNumber(byteArray) {
     }
 
     return value;
-};
+}
 
 //Convert a byte array to a float32
 function byteArrayToFloat(byteArray) {
@@ -765,7 +765,7 @@ function byteArrayToFloat(byteArray) {
     });
 
     return view.getFloat32(0);
-};
+}
 
 // is called when adapter shuts down
 adapter.on('unload', function (callback) {
