@@ -274,7 +274,7 @@ const getData = async (endpoint, iolinkport) => {
 		});
 		
 		let bytes = hexToBytes(await getValue(endpoint, requestSensorData));
-		let temperatureValue = (byteArrayToNumber([bytes[5], bytes[4]]));
+		let temperatureValue = (byteArrayToNumber([bytes[4], bytes[5]]));
 		let humidityValue = (byteArrayToNumber([bytes[0], bytes[1]])>>2) * 0.1;
 		let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]])
 
