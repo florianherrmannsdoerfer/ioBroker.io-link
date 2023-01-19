@@ -285,11 +285,11 @@ const getData = async (endpoint, iolinkport) => {
 		//0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
 		let humiditySub = bytes.substring(0,4);
 		let humidity = parseInt(humiditySub, 16);
-		//humidity = humidity * 0.1;
+		humidity = humidity * 0.1;
 
 		let tempSub = bytes.substring(8, 12);
 		let temp = parseInt(tempSub, 16);
-		//temp = temp * 0.1;
+		temp = temp * 0.1;
 
 		adapter.setObjectNotExists(`${idProcessData}.flowrate`, {
 			type: 'state',
@@ -303,7 +303,7 @@ const getData = async (endpoint, iolinkport) => {
 				write: false
 			}
 		});
-		adapter.setState(`${idProcessData}.flowrate`, temp, true);
+		adapter.setState(`${idProcessData}.flowrate`, humidity, true);
 
 		adapter.setObjectNotExists(`${idProcessData}.temperature`, {
 			type: 'state',
