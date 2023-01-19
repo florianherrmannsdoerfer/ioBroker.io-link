@@ -319,47 +319,7 @@ const getData = async (endpoint, iolinkport) => {
 		});
 		adapter.setState(`${idProcessData}.temperature`, temp, true);
 
-		adapter.setObjectNotExists(`${idProcessData}.total`, {
-			type: 'state',
-			common: {
-				name: 'Total',
-				role: 'value',
-				type: 'number',
-				value: 1,
-				unit: 'l',
-				read: true,
-				write: false
-			}
-		});
-		adapter.setState(`${idProcessData}.total`, 1, true);
 
-		adapter.setObjectNotExists(`${idProcessData}.out1`, {
-			type: 'state',
-			common: {
-				name: 'Out1',
-				role: 'indicator',
-				type: 'boolean',
-				value: 1,
-				unit: '',
-				read: true,
-				write: false
-			}
-		});
-		adapter.setState(`${idProcessData}.out1`, 1, true);
-
-		adapter.setObjectNotExists(`${idProcessData}.out2`, {
-			type: 'state',
-			common: {
-				name: 'Out2',
-				role: 'indicator',
-				type: 'boolean',
-				value: 1,
-				unit: '',
-				read: true,
-				write: false
-			}
-		});
-		adapter.setState(`${idProcessData}.out2`, 1, true);
 
 
 		//#################################################################################
