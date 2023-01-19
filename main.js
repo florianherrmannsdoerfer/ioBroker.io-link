@@ -288,7 +288,7 @@ const getData = async (endpoint, iolinkport) => {
 		//humidity = humidity * 0.1;
 
 		let tempSub = bytes.substring(8, 12);
-		let temp = parseInt(tempSub);
+		let temp = parseInt(tempSub, 16);
 		//temp = temp * 0.1;
 
 		adapter.setObjectNotExists(`${idProcessData}.flowrate`, {
