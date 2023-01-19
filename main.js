@@ -283,11 +283,11 @@ const getData = async (endpoint, iolinkport) => {
 
 		//0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
 		//0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
-		let humiditySub = bytes.substring(8,12);
+		let humiditySub = bytes.substring(0,4);
 		let humidity = parseInt(humiditySub, 16);
 		humidity = humidity * 0.1;
 
-		let tempSub = bytes.substring(0, 4);
+		let tempSub = bytes.substring(8, 12);
 		let temp = parseInt(tempSub, 16);
 		temp = temp * 0.1;
 
@@ -318,48 +318,6 @@ const getData = async (endpoint, iolinkport) => {
 			}
 		});
 		adapter.setState(`${idProcessData}.temperature`, temp, true);
-
-		adapter.setObjectNotExists(`${idProcessData}.total`, {
-			type: 'state',
-			common: {
-				name: 'Total',
-				role: 'value',
-				type: 'number',
-				value: 1,
-				unit: 'l',
-				read: true,
-				write: false
-			}
-		});
-		adapter.setState(`${idProcessData}.total`, 1, true);
-
-		adapter.setObjectNotExists(`${idProcessData}.out1`, {
-			type: 'state',
-			common: {
-				name: 'Out1',
-				role: 'indicator',
-				type: 'boolean',
-				value: 1,
-				unit: '',
-				read: true,
-				write: false
-			}
-		});
-		adapter.setState(`${idProcessData}.out1`, 1, true);
-
-		adapter.setObjectNotExists(`${idProcessData}.out2`, {
-			type: 'state',
-			common: {
-				name: 'Out2',
-				role: 'indicator',
-				type: 'boolean',
-				value: 1,
-				unit: '',
-				read: true,
-				write: false
-			}
-		});
-		adapter.setState(`${idProcessData}.out2`, 1, true);
 
 
 		//#################################################################################
