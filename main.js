@@ -283,11 +283,11 @@ const getData = async (endpoint, iolinkport) => {
 
 		//0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
 		//0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
-		let humiditySub = bytes.substring(8,12);
+		let humiditySub = bytes.substring(0,4);
 		let humidity = parseInt(humiditySub, 16);
 		humidity = humidity * 0.1;
 
-		let tempSub = bytes.substring(0, 4);
+		let tempSub = bytes.substring(8, 12);
 		let temp = parseInt(tempSub, 16);
 		temp = temp * 0.1;
 
