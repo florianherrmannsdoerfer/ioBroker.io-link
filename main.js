@@ -274,8 +274,8 @@ const getData = async (endpoint, iolinkport) => {
 		});
 		
 		let bytes = hexToBytes(await getValue(endpoint, requestSensorData));
-		let temperatureValue = (byteArrayToNumber([bytes[7], bytes[6]]) >> 2) * 0.1;
-		let flowrateValue = byteArrayToNumber([bytes[5], bytes[4]]) * 0.1;
+		let temperatureValue = (byteArrayToNumber([bytes[4], bytes[5]])) * 0.1;
+		let humidityValue = byteArrayToNumber([bytes[0], bytes[1]]) * 0.1;
 		let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]])
 
 		let out1Value = (bytes[7] & 0x01) === 0x01;
@@ -288,13 +288,13 @@ const getData = async (endpoint, iolinkport) => {
 				name: 'FlowRate',
 				role: 'value',
 				type: 'number',
-				value: flowrateValue,
+				value: humidityValue,
 				unit: 'l/min',
 				read: true,
 				write: false
 			}
 		});
-		adapter.setState(`${idProcessData}.flowrate`, flowrateValue, true);
+		adapter.setState(`${idProcessData}.flowrate`, humidityValue, true);
 
 		adapter.setObjectNotExists(`${idProcessData}.temperature`, {
 			type: 'state',
