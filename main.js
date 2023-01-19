@@ -273,14 +273,21 @@ const getData = async (endpoint, iolinkport) => {
 			}
 		});
 		
-		let bytes = hexToBytes(await getValue(endpoint, requestSensorData));
-		let temperatureValue = (byteArrayToNumber([bytes[5], bytes[4]]));
+		let bytes = await getValue(endpoint, requestSensorData);
+		let temperatureValue = (byteArrayToNumber([bytes[4], bytes[5]]));
 		let humidityValue = (byteArrayToNumber([bytes[0], bytes[1]])>>2) * 0.1;
-		let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]])
+		let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]]);
 
 		//let out1Value = (bytes[7] & 0x01) === 0x01;
 		//let out2Value = (bytes[7] & 0x02) === 0x02;
 
+		//0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+		//0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
+		let humiditySub = bytes.substring(0,4);
+		let humidity = parseInt(humiditySub, 16);
+
+		let tempSub = bytes.substring(8, 12);
+		let temp = parseInt(tempSub);
 
 		adapter.setObjectNotExists(`${idProcessData}.flowrate`, {
 			type: 'state',
@@ -294,7 +301,7 @@ const getData = async (endpoint, iolinkport) => {
 				write: false
 			}
 		});
-		adapter.setState(`${idProcessData}.flowrate`, temperatureValue, true);
+		adapter.setState(`${idProcessData}.flowrate`, humidity, true);
 
 		adapter.setObjectNotExists(`${idProcessData}.temperature`, {
 			type: 'state',
@@ -308,7 +315,7 @@ const getData = async (endpoint, iolinkport) => {
 				write: false
 			}
 		});
-		adapter.setState(`${idProcessData}.temperature`, 3, true);
+		adapter.setState(`${idProcessData}.temperature`, temp, true);
 
 		adapter.setObjectNotExists(`${idProcessData}.total`, {
 			type: 'state',
