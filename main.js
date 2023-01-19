@@ -274,8 +274,8 @@ const getData = async (endpoint, iolinkport) => {
 		});
 		
 		let bytes = hexToBytes(await getValue(endpoint, requestSensorData));
-		let temperatureValue = (byteArrayToNumber([bytes[4], bytes[5]])) * 0.1;
-		let humidityValue = byteArrayToNumber([bytes[0], bytes[1]]) * 0.1;
+		let temperatureValue = (byteArrayToNumber([bytes[4], bytes[5]])>>2) * 0.1;
+		let humidityValue = (byteArrayToNumber([bytes[0], bytes[1]])>>2) * 0.1;
 		let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]])
 
 		let out1Value = (bytes[7] & 0x01) === 0x01;
@@ -288,7 +288,7 @@ const getData = async (endpoint, iolinkport) => {
 				name: 'FlowRate',
 				role: 'value',
 				type: 'number',
-				value: humidityValue,
+				value: bytes,
 				unit: 'l/min',
 				read: true,
 				write: false
@@ -302,7 +302,7 @@ const getData = async (endpoint, iolinkport) => {
 				name: 'Temperature',
 				role: 'value.temperature',
 				type: 'number',
-				value: temperatureValue,
+				value: (byteArrayToNumber([bytes[4], bytes[5]])),
 				unit: '°C',
 				read: true,
 				write: false
@@ -316,7 +316,7 @@ const getData = async (endpoint, iolinkport) => {
 				name: 'Total',
 				role: 'value',
 				type: 'number',
-				value: totalValue,
+				value: (byteArrayToNumber([bytes[0], bytes[1]])),
 				unit: 'l',
 				read: true,
 				write: false
