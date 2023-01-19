@@ -281,6 +281,10 @@ const getData = async (endpoint, iolinkport) => {
 		let test1 = (byteArrayToNumber([bytes[4], bytes[5]]));
 		let test2 = (byteArrayToNumber([bytes[0], bytes[1]]));
 
+		console.log(bytes);
+		console.log(test1);
+		console.log(test2);
+
 		let out1Value = (bytes[7] & 0x01) === 0x01;
 		let out2Value = (bytes[7] & 0x02) === 0x02;
 
