@@ -292,11 +292,11 @@ const getData = async (endpoint, iolinkport) => {
                 let temp = parseInt(tempSub, 16);
                 temp = temp * 0.1;
 
-                adapter.setObjectNotExists(`${idProcessData}.humidity`, {
+                adapter.setObjectNotExists(`${idProcessData}.humidity135`, {
                     type: 'state',
                     common: {
-                        name: 'Humidity',
-                        role: 'value',
+                        name: 'Humidity135',
+                        role: 'value.humidity135',
                         type: 'number',
                         value: humidity,
                         unit: '%',
@@ -304,13 +304,13 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.humidity`, humidity, true);
+                adapter.setState(`${idProcessData}.humidity135`, humidity, true);
 
-                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                adapter.setObjectNotExists(`${idProcessData}.temperature135`, {
                     type: 'state',
                     common: {
-                        name: 'Temperature',
-                        role: 'value.temperature',
+                        name: 'Temperature135',
+                        role: 'value.temperature135',
                         type: 'number',
                         value: temp,
                         unit: '°C',
@@ -318,18 +318,18 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.temperature`, temp, true);
+                adapter.setState(`${idProcessData}.temperature135`, temp, true);
             }
             //Port 2
             else if (sensorId === 6) {
                 let temp = parseInt(bytes, 16);
                 temp = temp * 0.1;
 
-                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                adapter.setObjectNotExists(`${idProcessData}.temperature6`, {
                     type: 'state',
                     common: {
-                        name: 'Temperature',
-                        role: 'value.temperature',
+                        name: 'Temperature6',
+                        role: 'value.temperature6',
                         type: 'number',
                         value: temp,
                         unit: '°C',
@@ -337,7 +337,7 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.temperature`, temp, true);
+                adapter.setState(`${idProcessData}.temperature6`, temp, true);
             }
             //Port 3
             else if (sensorId === 25) {
@@ -352,11 +352,11 @@ const getData = async (endpoint, iolinkport) => {
                 let temperature = wordTwo >> 2;
                 temperature = temperature * 0.1;
 
-                adapter.setObjectNotExists(`${idProcessData}.flow`, {
+                adapter.setObjectNotExists(`${idProcessData}.flow48`, {
                     type: 'state',
                     common: {
-                        name: 'Flow',
-                        role: 'value.flow',
+                        name: 'Flow48',
+                        role: 'value.flow48',
                         type: 'number',
                         value: flow,
                         unit: '%',
@@ -364,13 +364,13 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.flow`, flow, true);
+                adapter.setState(`${idProcessData}.flow48`, flow, true);
 
-                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                adapter.setObjectNotExists(`${idProcessData}.temperature48`, {
                     type: 'state',
                     common: {
-                        name: 'Temperature',
-                        role: 'value.temperature',
+                        name: 'Temperature48',
+                        role: 'value.temperature48',
                         type: 'number',
                         value: temperature,
                         unit: '°C',
@@ -378,7 +378,7 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.temperature`, temperature, true);
+                adapter.setState(`${idProcessData}.temperature48`, temperature, true);
             }
         }
 
