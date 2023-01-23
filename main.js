@@ -268,6 +268,10 @@ const getData = async (endpoint, iolinkport) => {
             }
         });
 
+        let tmpVorlauf = 0;
+        let tmpRuecklauf = 0;
+        let tmpDelta = 0;
+
         const sensorPortMap = new Map();
         for (let i = 1; i <= 4; i++) {
             let sensorPort = i;
@@ -275,7 +279,7 @@ const getData = async (endpoint, iolinkport) => {
             sensorPortMap.set(sensorPort, await getValue(endpoint, requestSensorId));
         }
 
-        for (let [sensorPort, sensorId] of sensorPortMap){
+        for (let [sensorPort, sensorId] of sensorPortMap) {
             let bytes = await getValue(endpoint, getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/pdin/getdata`));
             let sensorid = await getValue(endpoint, requestSensorId);
 
@@ -292,11 +296,11 @@ const getData = async (endpoint, iolinkport) => {
                 let temp = parseInt(tempSub, 16);
                 temp = temp * 0.1;
 
-                adapter.setObjectNotExists(`${idProcessData}.humidity`, {
+                adapter.setObjectNotExists(`${idProcessData}.humidity135`, {
                     type: 'state',
                     common: {
-                        name: 'Humidity',
-                        role: 'value',
+                        name: 'Humidity135',
+                        role: 'value.humidity135',
                         type: 'number',
                         value: humidity,
                         unit: '%',
@@ -304,13 +308,13 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.humidity`, humidity, true);
+                adapter.setState(`${idProcessData}.humidity135`, humidity, true);
 
-                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                adapter.setObjectNotExists(`${idProcessData}.temperature135`, {
                     type: 'state',
                     common: {
-                        name: 'Temperature',
-                        role: 'value.temperature',
+                        name: 'Temperature135',
+                        role: 'value.temperature135',
                         type: 'number',
                         value: temp,
                         unit: '°C',
@@ -318,26 +322,26 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.temperature`, temp, true);
+                adapter.setState(`${idProcessData}.temperature135`, temp, true);
             }
             //Port 2
             else if (sensorId === 6) {
-                let temp = parseInt(bytes, 16);
-                temp = temp * 0.1;
-
-                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                let tempretureVorlauf = parseInt(bytes, 16);
+                tempretureVorlauf = tempretureVorlauf * 0.1;
+                tmpVorlauf = tempretureVorlauf;
+                adapter.setObjectNotExists(`${idProcessData}.TemperatureVorlauf`, {
                     type: 'state',
                     common: {
-                        name: 'Temperature',
-                        role: 'value.temperature',
+                        name: 'TemperatureVorlauf',
+                        role: 'value.TemperatureVorlauf',
                         type: 'number',
-                        value: temp,
+                        value: tempretureVorlauf,
                         unit: '°C',
                         read: true,
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.temperature`, temp, true);
+                adapter.setState(`${idProcessData}.TemperatureVorlauf`, tempretureVorlauf, true);
             }
             //Port 3
             else if (sensorId === 25) {
@@ -349,14 +353,15 @@ const getData = async (endpoint, iolinkport) => {
                 let flow = parseInt(bytes.substring(0, 4), 16);
 
                 let wordTwo = parseInt(bytes.substring(4, 8), 16);
-                let temperature = wordTwo >> 2;
-                temperature = temperature * 0.1;
+                let temperatureRuecklauf = wordTwo >> 2;
+                temperatureRuecklauf = temperatureRuecklauf * 0.1;
+                tmpRuecklauf = temperatureRuecklauf;
 
-                adapter.setObjectNotExists(`${idProcessData}.flow`, {
+                adapter.setObjectNotExists(`${idProcessData}.flow48`, {
                     type: 'state',
                     common: {
-                        name: 'Flow',
-                        role: 'value.flow',
+                        name: 'Flow48',
+                        role: 'value.flow48',
                         type: 'number',
                         value: flow,
                         unit: '%',
@@ -364,23 +369,39 @@ const getData = async (endpoint, iolinkport) => {
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.flow`, flow, true);
+                adapter.setState(`${idProcessData}.flow48`, flow, true);
 
-                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                adapter.setObjectNotExists(`${idProcessData}.temperatureRuecklauf`, {
                     type: 'state',
                     common: {
-                        name: 'Temperature',
-                        role: 'value.temperature',
+                        name: 'TemperatureRuecklauf',
+                        role: 'value.temperatureRuecklauf',
                         type: 'number',
-                        value: temperature,
+                        value: temperatureRuecklauf,
                         unit: '°C',
                         read: true,
                         write: false
                     }
                 });
-                adapter.setState(`${idProcessData}.temperature`, temperature, true);
+                adapter.setState(`${idProcessData}.temperatureRuecklauf`, temperatureRuecklauf, true);
             }
         }
+
+        tmpDelta = tmpRuecklauf - tmpVorlauf;
+
+        adapter.setObjectNotExists(`${idProcessData}.temperatureDelta`, {
+            type: 'state',
+            common: {
+                name: 'TemperatureDelta',
+                role: 'value.temperatureDelta',
+                type: 'number',
+                value: tmpDelta,
+                unit: '°C',
+                read: true,
+                write: false
+            }
+        });
+        adapter.setState(`${idProcessData}.temperatureDelta`, tmpDelta, true);
 
         //#################################################################################
         //IO-Link infos
