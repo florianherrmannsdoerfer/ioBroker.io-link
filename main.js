@@ -342,6 +342,39 @@ const getData = async (endpoint, iolinkport) => {
         //Port 4
         else if (sensorid === 48){
 
+            let flow = parseInt(bytes.substring(0, 4), 16);
+
+            let wordTwo = parseInt(bytes.substring(4, 8), 16);
+            let temperature = wordTwo >> 2;
+            temperature = temperature * 0.1;
+
+            adapter.setObjectNotExists(`${idProcessData}.flow`, {
+                type: 'state',
+                common: {
+                    name: 'Flow',
+                    role: 'value.flow',
+                    type: 'number',
+                    value: flow,
+                    unit: '%',
+                    read: true,
+                    write: false
+                }
+            });
+            adapter.setState(`${idProcessData}.flow`, flow, true);
+
+            adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                type: 'state',
+                common: {
+                    name: 'Temperature',
+                    role: 'value.temperature',
+                    type: 'number',
+                    value: temperature,
+                    unit: '°C',
+                    read: true,
+                    write: false
+                }
+            });
+            adapter.setState(`${idProcessData}.temperature`, temperature, true);
         }
 
 
