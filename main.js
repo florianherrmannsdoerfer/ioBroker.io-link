@@ -268,115 +268,119 @@ const getData = async (endpoint, iolinkport) => {
             }
         });
 
-        let bytes = await getValue(endpoint, requestSensorData);
-        let temperatureValue = (byteArrayToNumber([bytes[4], bytes[5]]));
-        let humidityValue = (byteArrayToNumber([bytes[0], bytes[1]]) >> 2) * 0.1;
-        let totalValue = byteArrayToFloat([bytes[0], bytes[1], bytes[2], bytes[3]]);
-
-        let sensorid = await getValue(endpoint, requestSensorId);
-
-        if (sensorid === 135) {//let out1Value = (bytes[7] & 0x01) === 0x01;
-            //let out2Value = (bytes[7] & 0x02) === 0x02;
-
-            //0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-            //0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
-            let humiditySub = bytes.substring(0, 4);
-            let humidity = parseInt(humiditySub, 16);
-            humidity = humidity * 0.1;
-
-            let tempSub = bytes.substring(8, 12);
-            let temp = parseInt(tempSub, 16);
-            temp = temp * 0.1;
-
-            adapter.setObjectNotExists(`${idProcessData}.humidity`, {
-                type: 'state',
-                common: {
-                    name: 'Humidity',
-                    role: 'value',
-                    type: 'number',
-                    value: humidity,
-                    unit: '%',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.humidity`, humidity, true);
-
-            adapter.setObjectNotExists(`${idProcessData}.temperature`, {
-                type: 'state',
-                common: {
-                    name: 'Temperature',
-                    role: 'value.temperature',
-                    type: 'number',
-                    value: temp,
-                    unit: '°C',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.temperature`, temp, true);
-        }
-        //Port 2
-        else if (sensorid === 6){
-            let temp = parseInt(bytes, 16);
-            temp = temp * 0.1;
-
-            adapter.setObjectNotExists(`${idProcessData}.temperature`, {
-                type: 'state',
-                common: {
-                    name: 'Temperature',
-                    role: 'value.temperature',
-                    type: 'number',
-                    value: temp,
-                    unit: '°C',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.temperature`, temp, true);
-        }
-        //Port 3
-        else if (sensorid === 25){
-
-        }
-        //Port 4
-        else if (sensorid === 48){
-
-            let flow = parseInt(bytes.substring(0, 4), 16);
-
-            let wordTwo = parseInt(bytes.substring(4, 8), 16);
-            let temperature = wordTwo >> 2;
-            temperature = temperature * 0.1;
-
-            adapter.setObjectNotExists(`${idProcessData}.flow`, {
-                type: 'state',
-                common: {
-                    name: 'Flow',
-                    role: 'value.flow',
-                    type: 'number',
-                    value: flow,
-                    unit: '%',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.flow`, flow, true);
-
-            adapter.setObjectNotExists(`${idProcessData}.temperature`, {
-                type: 'state',
-                common: {
-                    name: 'Temperature',
-                    role: 'value.temperature',
-                    type: 'number',
-                    value: temperature,
-                    unit: '°C',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.temperature`, temperature, true);
+        const sensorPortMap = new Map();
+        for (let i = 1; i <= 4; i++) {
+            let sensorPort = i;
+            let requestSensorId = getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/deviceid/getdata`);
+            sensorPortMap.set(sensorPort, await getValue(endpoint, requestSensorId));
         }
 
+        for (let [sensorPort, sensorId] of sensorPortMap){
+            let bytes = await getValue(endpoint, getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/pdin/getdata`));
+            let sensorid = await getValue(endpoint, requestSensorId);
+
+            if (sensorId === 135) {//let out1Value = (bytes[7] & 0x01) === 0x01;
+                //let out2Value = (bytes[7] & 0x02) === 0x02;
+
+                //0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+                //0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
+                let humiditySub = bytes.substring(0, 4);
+                let humidity = parseInt(humiditySub, 16);
+                humidity = humidity * 0.1;
+
+                let tempSub = bytes.substring(8, 12);
+                let temp = parseInt(tempSub, 16);
+                temp = temp * 0.1;
+
+                adapter.setObjectNotExists(`${idProcessData}.humidity`, {
+                    type: 'state',
+                    common: {
+                        name: 'Humidity',
+                        role: 'value',
+                        type: 'number',
+                        value: humidity,
+                        unit: '%',
+                        read: true,
+                        write: false
+                    }
+                });
+                adapter.setState(`${idProcessData}.humidity`, humidity, true);
+
+                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                    type: 'state',
+                    common: {
+                        name: 'Temperature',
+                        role: 'value.temperature',
+                        type: 'number',
+                        value: temp,
+                        unit: '°C',
+                        read: true,
+                        write: false
+                    }
+                });
+                adapter.setState(`${idProcessData}.temperature`, temp, true);
+            }
+            //Port 2
+            else if (sensorId === 6) {
+                let temp = parseInt(bytes, 16);
+                temp = temp * 0.1;
+
+                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                    type: 'state',
+                    common: {
+                        name: 'Temperature',
+                        role: 'value.temperature',
+                        type: 'number',
+                        value: temp,
+                        unit: '°C',
+                        read: true,
+                        write: false
+                    }
+                });
+                adapter.setState(`${idProcessData}.temperature`, temp, true);
+            }
+            //Port 3
+            else if (sensorId === 25) {
+
+            }
+            //Port 4
+            else if (sensorId === 48) {
+
+                let flow = parseInt(bytes.substring(0, 4), 16);
+
+                let wordTwo = parseInt(bytes.substring(4, 8), 16);
+                let temperature = wordTwo >> 2;
+                temperature = temperature * 0.1;
+
+                adapter.setObjectNotExists(`${idProcessData}.flow`, {
+                    type: 'state',
+                    common: {
+                        name: 'Flow',
+                        role: 'value.flow',
+                        type: 'number',
+                        value: flow,
+                        unit: '%',
+                        read: true,
+                        write: false
+                    }
+                });
+                adapter.setState(`${idProcessData}.flow`, flow, true);
+
+                adapter.setObjectNotExists(`${idProcessData}.temperature`, {
+                    type: 'state',
+                    common: {
+                        name: 'Temperature',
+                        role: 'value.temperature',
+                        type: 'number',
+                        value: temperature,
+                        unit: '°C',
+                        read: true,
+                        write: false
+                    }
+                });
+                adapter.setState(`${idProcessData}.temperature`, temperature, true);
+            }
+        }
 
         //#################################################################################
         //IO-Link infos
