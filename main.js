@@ -307,7 +307,7 @@ const getData = async (endpoint, iolinkport) => {
                 }
                 //Port 3
                 else if (sensorId === 25) {
-                    let wordZero = parseInt(bytes.substring(4, 8), 16);
+                    let wordZero = parseInt(bytes.substring(0, 4), 16);
                     let pressure = wordZero >> 2;
 
                     adapter.setObjectNotExists(`${idProcessData}.pressure`, {
