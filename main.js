@@ -307,7 +307,22 @@ const getData = async (endpoint, iolinkport) => {
                 }
                 //Port 3
                 else if (sensorId === 25) {
+                    let wordZero = parseInt(bytes.substring(4, 8), 16);
+                    let pressure = wordZero >> 2;
 
+                    adapter.setObjectNotExists(`${idProcessData}.pressure`, {
+                        type: 'state',
+                        common: {
+                            name: 'Druck',
+                            role: 'value.pressure',
+                            type: 'number',
+                            value: pressure,
+                            unit: '%',
+                            read: true,
+                            write: false
+                        }
+                    });
+                    adapter.setState(`${idProcessData}.flow48`, pressure, true);
                 }
                 //Port 4
                 else if (sensorId === 48) {
