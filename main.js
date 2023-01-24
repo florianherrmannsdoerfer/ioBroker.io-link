@@ -144,7 +144,6 @@ const getData = async (endpoint, iolinkport) => {
     try {
         try { //sensor info and process data requests
             let requestSensorName = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/productname/getdata`);
-            let requestSensorId = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/deviceid/getdata`);
 
             //master info and process data requests
             let requestMasterName = getRequestBody(`/deviceinfo/productcode/getdata`);
@@ -230,25 +229,7 @@ const getData = async (endpoint, iolinkport) => {
             });
 
             var idProcessData = `${idSensor}.processdata`;
-            var idIoLink = `${idSensor}.iolink`;
 
-            adapter.setObjectNotExists(idProcessData, {
-                type: 'channel',
-                common: {
-                    name: `Process data`,
-                    read: true,
-                    write: false
-                }
-            });
-
-            adapter.setObjectNotExists(idIoLink, {
-                type: 'channel',
-                common: {
-                    name: `IO-Link`,
-                    read: true,
-                    write: false
-                }
-            });
 
             let tmpVorlauf = 0;
             let tmpRuecklauf = 0;
