@@ -143,259 +143,256 @@ const getPortData = async (/** @type {string} */ endpoint, /** @type {number} */
 const getData = async (endpoint, iolinkport) => {
     try {
         try { //sensor info and process data requests
-        let requestSensorName = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/productname/getdata`);
-        let requestSensorId = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/deviceid/getdata`);
+            let requestSensorName = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/productname/getdata`);
+            let requestSensorId = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/deviceid/getdata`);
 
-        //master info and process data requests
-        let requestMasterName = getRequestBody(`/deviceinfo/productcode/getdata`);
+            //master info and process data requests
+            let requestMasterName = getRequestBody(`/deviceinfo/productcode/getdata`);
 
 
-        let masterDeviceName = await getValue(endpoint, requestMasterName);
+            let masterDeviceName = await getValue(endpoint, requestMasterName);
 
-        let availablPorts = 0;
-        switch (masterDeviceName) {
-            case 'AL1370':
-                availablPorts = 4;
-                break;
-            case 'AL1352':
-                availablPorts = 8;
-                break;
-            default:
-                adapter.log.error(`IO-Link adapter - Master ${masterDeviceName} is not supported!`);
-                adapter.stop();
-                break;
-        }
-
-        let sensorName = await getValue(endpoint, requestSensorName);
-        //TODO: check sensor name
-
-        adapter.setObjectNotExists(masterDeviceName, {
-            type: 'device',
-            common: {
-                name: `IFM ${masterDeviceName}`,
-                read: true,
-                write: false
+            let availablPorts = 0;
+            switch (masterDeviceName) {
+                case 'AL1370':
+                    availablPorts = 4;
+                    break;
+                case 'AL1352':
+                    availablPorts = 8;
+                    break;
+                default:
+                    adapter.log.error(`IO-Link adapter - Master ${masterDeviceName} is not supported!`);
+                    adapter.stop();
+                    break;
             }
-        });
 
-        var idMasterProcessData = `${masterDeviceName}.processdata`;
-        var idMasterInfo = `${masterDeviceName}.info`;
+            let sensorName = await getValue(endpoint, requestSensorName);
+            //TODO: check sensor name
 
-        adapter.setObjectNotExists(idMasterProcessData, {
-            type: 'channel',
-            common: {
-                name: `Process data (Master)`,
-                read: true,
-                write: false
-            }
-        });
-
-
-        adapter.setObjectNotExists(idMasterInfo, {
-            type: 'channel',
-            common: {
-                name: `Info`,
-                read: true,
-                write: false
-            }
-        });
-
-        adapter.setObjectNotExists(`${masterDeviceName}.${iolinkport}`, {
-            type: 'channel',
-            common: {
-                name: `IO-Link port ${iolinkport}`,
-                read: true,
-                write: false
-            }
-        });
-
-        var idSensor = `${masterDeviceName}.${iolinkport}.${sensorName}`;
-
-        const json = require('./devices/device-spec.json'); //(with path)
-        var dummySpec = DeviceSpec.from(json);
-
-        generateChannelObject(`${masterDeviceName}.iolinkports`, 'IO-Link Ports')
-        await getPortData(endpoint, 1, `${masterDeviceName}.iolinkports`, null);
-        await getPortData(endpoint, 2, `${masterDeviceName}.iolinkports`, dummySpec);
-        //await getPortData(endpoint, 3, `${masterDeviceName}.iolinkports`);
-
-
-        adapter.setObjectNotExists(idSensor, {
-            type: 'device',
-            common: {
-                name: `IFM ${sensorName}`,
-                read: true,
-                write: false
-            }
-        });
-
-        var idProcessData = `${idSensor}.processdata`;
-        var idIoLink = `${idSensor}.iolink`;
-
-        adapter.setObjectNotExists(idProcessData, {
-            type: 'channel',
-            common: {
-                name: `Process data`,
-                read: true,
-                write: false
-            }
-        });
-
-        adapter.setObjectNotExists(idIoLink, {
-            type: 'channel',
-            common: {
-                name: `IO-Link`,
-                read: true,
-                write: false
-            }
-        });
-
-        let tmpVorlauf = 0;
-        let tmpRuecklauf = 0;
-        let tmpDelta = 0;
-
-
-
-    const sensorPortMap = new Map();
-    for (let i = 1; i <= 4; i++) {
-        let sensorPort = i;
-        let requestSensorId = getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/deviceid/getdata`);
-        sensorPortMap.set(sensorPort, await getValue(endpoint, requestSensorId));
-    }
-
-    for (let [sensorPort, sensorId] of sensorPortMap) {
-        let bytes = await getValue(endpoint, getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/pdin/getdata`));
-
-        if (sensorId === 135) {//let out1Value = (bytes[7] & 0x01) === 0x01;
-            //let out2Value = (bytes[7] & 0x02) === 0x02;
-
-            //0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-            //0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
-            let humiditySub = bytes.substring(0, 4);
-            let humidity = parseInt(humiditySub, 16);
-            humidity = humidity * 0.1;
-
-            let tempSub = bytes.substring(8, 12);
-            let temp = parseInt(tempSub, 16);
-            temp = temp * 0.1;
-
-            adapter.setObjectNotExists(`${idProcessData}.humidity135`, {
-                type: 'state',
+            adapter.setObjectNotExists(masterDeviceName, {
+                type: 'device',
                 common: {
-                    name: 'Humidity135',
-                    role: 'value.humidity135',
-                    type: 'number',
-                    value: humidity,
-                    unit: '%',
+                    name: `IFM ${masterDeviceName}`,
                     read: true,
                     write: false
                 }
             });
-            adapter.setState(`${idProcessData}.humidity135`, humidity, true);
 
-            adapter.setObjectNotExists(`${idProcessData}.temperature135`, {
+            var idMasterProcessData = `${masterDeviceName}.processdata`;
+            var idMasterInfo = `${masterDeviceName}.info`;
+
+            adapter.setObjectNotExists(idMasterProcessData, {
+                type: 'channel',
+                common: {
+                    name: `Process data (Master)`,
+                    read: true,
+                    write: false
+                }
+            });
+
+
+            adapter.setObjectNotExists(idMasterInfo, {
+                type: 'channel',
+                common: {
+                    name: `Info`,
+                    read: true,
+                    write: false
+                }
+            });
+
+            adapter.setObjectNotExists(`${masterDeviceName}.${iolinkport}`, {
+                type: 'channel',
+                common: {
+                    name: `IO-Link port ${iolinkport}`,
+                    read: true,
+                    write: false
+                }
+            });
+
+            var idSensor = `${masterDeviceName}.${iolinkport}.${sensorName}`;
+
+            const json = require('./devices/device-spec.json'); //(with path)
+            var dummySpec = DeviceSpec.from(json);
+
+            generateChannelObject(`${masterDeviceName}.iolinkports`, 'IO-Link Ports')
+            await getPortData(endpoint, 1, `${masterDeviceName}.iolinkports`, null);
+            await getPortData(endpoint, 2, `${masterDeviceName}.iolinkports`, dummySpec);
+            //await getPortData(endpoint, 3, `${masterDeviceName}.iolinkports`);
+
+
+            adapter.setObjectNotExists(idSensor, {
+                type: 'device',
+                common: {
+                    name: `IFM ${sensorName}`,
+                    read: true,
+                    write: false
+                }
+            });
+
+            var idProcessData = `${idSensor}.processdata`;
+            var idIoLink = `${idSensor}.iolink`;
+
+            adapter.setObjectNotExists(idProcessData, {
+                type: 'channel',
+                common: {
+                    name: `Process data`,
+                    read: true,
+                    write: false
+                }
+            });
+
+            adapter.setObjectNotExists(idIoLink, {
+                type: 'channel',
+                common: {
+                    name: `IO-Link`,
+                    read: true,
+                    write: false
+                }
+            });
+
+            let tmpVorlauf = 0;
+            let tmpRuecklauf = 0;
+            let tmpDelta = 0;
+
+            const sensorPortMap = new Map();
+            for (let i = 1; i <= 4; i++) {
+                let sensorPort = i;
+                let requestSensorId = getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/deviceid/getdata`);
+                sensorPortMap.set(sensorPort, await getValue(endpoint, requestSensorId));
+            }
+
+            for (let [sensorPort, sensorId] of sensorPortMap) {
+                let bytes = await getValue(endpoint, getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/pdin/getdata`));
+
+                if (sensorId === 135) {//let out1Value = (bytes[7] & 0x01) === 0x01;
+                    //let out2Value = (bytes[7] & 0x02) === 0x02;
+
+                    //0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+                    //0 1 A 1 F F 0 0 0 0 C  F  F  F  0  0
+                    let humiditySub = bytes.substring(0, 4);
+                    let humidity = parseInt(humiditySub, 16);
+                    humidity = humidity * 0.1;
+
+                    let tempSub = bytes.substring(8, 12);
+                    let temp = parseInt(tempSub, 16);
+                    temp = temp * 0.1;
+
+                    adapter.setObjectNotExists(`${idProcessData}.humidity135`, {
+                        type: 'state',
+                        common: {
+                            name: 'Humidity135',
+                            role: 'value.humidity135',
+                            type: 'number',
+                            value: humidity,
+                            unit: '%',
+                            read: true,
+                            write: false
+                        }
+                    });
+                    adapter.setState(`${idProcessData}.humidity135`, humidity, true);
+
+                    adapter.setObjectNotExists(`${idProcessData}.temperature135`, {
+                        type: 'state',
+                        common: {
+                            name: 'Temperature135',
+                            role: 'value.temperature135',
+                            type: 'number',
+                            value: temp,
+                            unit: '°C',
+                            read: true,
+                            write: false
+                        }
+                    });
+                    adapter.setState(`${idProcessData}.temperature135`, temp, true);
+                }
+                //Port 2
+                else if (sensorId === 6) {
+                    let tempretureVorlauf = parseInt(bytes, 16);
+                    tempretureVorlauf = tempretureVorlauf * 0.1;
+                    tmpVorlauf = tempretureVorlauf;
+                    adapter.setObjectNotExists(`${idProcessData}.TemperatureVorlauf`, {
+                        type: 'state',
+                        common: {
+                            name: 'TemperatureVorlauf',
+                            role: 'value.TemperatureVorlauf',
+                            type: 'number',
+                            value: tempretureVorlauf,
+                            unit: '°C',
+                            read: true,
+                            write: false
+                        }
+                    });
+                    adapter.setState(`${idProcessData}.TemperatureVorlauf`, tempretureVorlauf, true);
+                }
+                //Port 3
+                else if (sensorId === 25) {
+
+                }
+                //Port 4
+                else if (sensorId === 48) {
+
+                    let flow = parseInt(bytes.substring(0, 4), 16);
+
+                    let wordTwo = parseInt(bytes.substring(4, 8), 16);
+                    let temperatureRuecklauf = wordTwo >> 2;
+                    temperatureRuecklauf = temperatureRuecklauf * 0.1;
+                    tmpRuecklauf = temperatureRuecklauf;
+
+                    adapter.setObjectNotExists(`${idProcessData}.flow48`, {
+                        type: 'state',
+                        common: {
+                            name: 'Flow48',
+                            role: 'value.flow48',
+                            type: 'number',
+                            value: flow,
+                            unit: '%',
+                            read: true,
+                            write: false
+                        }
+                    });
+                    adapter.setState(`${idProcessData}.flow48`, flow, true);
+
+                    adapter.setObjectNotExists(`${idProcessData}.temperatureRuecklauf`, {
+                        type: 'state',
+                        common: {
+                            name: 'TemperatureRuecklauf',
+                            role: 'value.temperatureRuecklauf',
+                            type: 'number',
+                            value: temperatureRuecklauf,
+                            unit: '°C',
+                            read: true,
+                            write: false
+                        }
+                    });
+                    adapter.setState(`${idProcessData}.temperatureRuecklauf`, temperatureRuecklauf, true);
+                }
+            }
+
+            tmpDelta = tmpRuecklauf - tmpVorlauf;
+
+            adapter.setObjectNotExists(`${idProcessData}.temperatureDelta`, {
                 type: 'state',
                 common: {
-                    name: 'Temperature135',
-                    role: 'value.temperature135',
+                    name: 'TemperatureDelta',
+                    role: 'value.temperatureDelta',
                     type: 'number',
-                    value: temp,
+                    value: tmpDelta,
                     unit: '°C',
                     read: true,
                     write: false
                 }
             });
-            adapter.setState(`${idProcessData}.temperature135`, temp, true);
+            adapter.setState(`${idProcessData}.temperatureDelta`, tmpDelta, true);
+        } catch (error) {
+            adapter.log.info('My fault ' + error);
+            adapter.log.error(error);
         }
-        //Port 2
-        else if (sensorId === 6) {
-            let tempretureVorlauf = parseInt(bytes, 16);
-            tempretureVorlauf = tempretureVorlauf * 0.1;
-            tmpVorlauf = tempretureVorlauf;
-            adapter.setObjectNotExists(`${idProcessData}.TemperatureVorlauf`, {
-                type: 'state',
-                common: {
-                    name: 'TemperatureVorlauf',
-                    role: 'value.TemperatureVorlauf',
-                    type: 'number',
-                    value: tempretureVorlauf,
-                    unit: '°C',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.TemperatureVorlauf`, tempretureVorlauf, true);
-        }
-        //Port 3
-        else if (sensorId === 25) {
-
-        }
-        //Port 4
-        else if (sensorId === 48) {
-
-            let flow = parseInt(bytes.substring(0, 4), 16);
-
-            let wordTwo = parseInt(bytes.substring(4, 8), 16);
-            let temperatureRuecklauf = wordTwo >> 2;
-            temperatureRuecklauf = temperatureRuecklauf * 0.1;
-            tmpRuecklauf = temperatureRuecklauf;
-
-            adapter.setObjectNotExists(`${idProcessData}.flow48`, {
-                type: 'state',
-                common: {
-                    name: 'Flow48',
-                    role: 'value.flow48',
-                    type: 'number',
-                    value: flow,
-                    unit: '%',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.flow48`, flow, true);
-
-            adapter.setObjectNotExists(`${idProcessData}.temperatureRuecklauf`, {
-                type: 'state',
-                common: {
-                    name: 'TemperatureRuecklauf',
-                    role: 'value.temperatureRuecklauf',
-                    type: 'number',
-                    value: temperatureRuecklauf,
-                    unit: '°C',
-                    read: true,
-                    write: false
-                }
-            });
-            adapter.setState(`${idProcessData}.temperatureRuecklauf`, temperatureRuecklauf, true);
-        }
-    }
-
-    tmpDelta = tmpRuecklauf - tmpVorlauf;
-
-    adapter.setObjectNotExists(`${idProcessData}.temperatureDelta`, {
-        type: 'state',
-        common: {
-            name: 'TemperatureDelta',
-            role: 'value.temperatureDelta',
-            type: 'number',
-            value: tmpDelta,
-            unit: '°C',
-            read: true,
-            write: false
-        }
-    });
-    adapter.setState(`${idProcessData}.temperatureDelta`, tmpDelta, true);
-} catch (error){
-    adapter.log.info('My fault ' + error);
-    adapter.log.error(error);
-}
         //#################################################################################
         //IO-Link infos
 
 
         //###############################################################################
         //Master process data
-
 
 
         adapter.log.info('IO-Link adapter - fetching data completed');
