@@ -126,14 +126,14 @@ const getPortData = async (/** @type {string} */ endpoint, /** @type {number} */
 
                 });
             } catch (error) {
-                adapter.log.warn('IO-Link adapter - ERROR: ' + error);
+                adapter.log.warn('1 IO-Link adapter - ERROR: ' + error);
             }
         } else {
             adapter.log.warn('no devicespec?: ' + devicespec);
         }
 
     } catch (error) {
-        adapter.log.info('IO-Link adapter - ERROR: ' + error);
+        adapter.log.info('2 IO-Link adapter - ERROR: ' + error);
         adapter.log.error(error);
         adapter.stop();
     }
@@ -143,36 +143,18 @@ const getPortData = async (/** @type {string} */ endpoint, /** @type {number} */
 const getData = async (endpoint, iolinkport) => {
     try {
         //sensor info and process data requests
-        let requestSensorData = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/pdin/getdata`);
         let requestSensorName = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/productname/getdata`);
-        let requestSensorComSpeed = getRequestBody(`/iolinkmaster/port[${iolinkport}]/comspeed/getdata`);
-        let requestSensorCycletime = getRequestBody(`/iolinkmaster/port[${iolinkport}]/mastercycletime_actual/getdata`);
-        let requestSensorVendorId = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/vendorid/getdata`);
         let requestSensorId = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/deviceid/getdata`);
-        let requestDeviceSn = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/serial/getdata`);
-        let requestSensorStatus = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/status/getdata`);
 
         //master info and process data requests
-        let requestMasterCurrent = getRequestBody(`/processdatamaster/current/getdata`);
-        let requestMasterCurrentUnit = getRequestBody(`/processdatamaster/current/unit/getdata`);
-        let requestMasterVoltage = getRequestBody(`/processdatamaster/voltage/getdata`);
-        let requestMasterVoltageUnit = getRequestBody(`/processdatamaster/voltage/unit/getdata`);
-        let requestMasterTemperature = getRequestBody(`/processdatamaster/temperature/getdata`);
-        let requestMasterTemperatureUnit = getRequestBody(`/processdatamaster/temperature/unit/getdata`);
-        let requestMasterStatus = getRequestBody(`/processdatamaster/supervisionstatus/getdata`);
         let requestMasterName = getRequestBody(`/deviceinfo/productcode/getdata`);
-        let requestMasterSerial = getRequestBody(`/deviceinfo/serialnumber/getdata`);
-        let requestMasterSoftwareRevision = getRequestBody(`/deviceinfo/swrevision/getdata`);
-        let requestMasterBootloaderRevision = getRequestBody(`/deviceinfo/bootloaderrevision/getdata`);
-        let requestMasterHardwareRevision = getRequestBody(`/deviceinfo/hwrevision/getdata`);
-        let requestMasterMac = getRequestBody(`/iotsetup/network/macaddress/getdata`);
 
 
         let masterDeviceName = await getValue(endpoint, requestMasterName);
 
         let availablPorts = 0;
         switch (masterDeviceName) {
-            case 'AL1350':
+            case 'AL1370':
                 availablPorts = 4;
                 break;
             case 'AL1352':
@@ -406,288 +388,10 @@ const getData = async (endpoint, iolinkport) => {
         //#################################################################################
         //IO-Link infos
 
-        let comSpeed = '';
-        switch (await getValue(endpoint, requestSensorComSpeed)) {
-            case 0:
-                comSpeed = 'COM1 (4.8 kBaud)';
-                break;
-            case 1:
-                comSpeed = 'COM2 (38.4 kBaud)';
-                break;
-            case 2:
-                comSpeed = 'COM3 (230.4 kBaud)';
-                break;
-        }
-
-        adapter.setObjectNotExists(`${idIoLink}.comspeed`, {
-            type: 'state',
-            common: {
-                name: 'Communication Mode',
-                role: 'value',
-                type: 'string',
-                value: comSpeed,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idIoLink}.comspeed`, comSpeed, true);
-
-
-        let deviceStatus = '';
-        switch (await getValue(endpoint, requestSensorStatus)) {
-            case 0:
-                deviceStatus = 'Not connected';
-                break;
-            case 1:
-                deviceStatus = 'Preoperate';
-                break;
-            case 2:
-                deviceStatus = 'Operate';
-                break;
-            case 3:
-                deviceStatus = 'Communication error';
-                break;
-        }
-
-        adapter.setObjectNotExists(`${idIoLink}.status`, {
-            type: 'state',
-            common: {
-                name: 'Device status',
-                role: 'info.status',
-                type: 'string',
-                value: deviceStatus,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idIoLink}.status`, deviceStatus, true);
-
-
-        let cycletime = await getValue(endpoint, requestSensorCycletime) / 1000;
-
-        adapter.setObjectNotExists(`${idIoLink}.mastercycletime`, {
-            type: 'state',
-            common: {
-                name: 'Master Cycletime',
-                role: 'value.interval',
-                type: 'number',
-                unit: 'ms',
-                value: cycletime,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idIoLink}.mastercycletime`, cycletime, true);
-
-
-        let vendorid = await getValue(endpoint, requestSensorVendorId);
-
-        adapter.setObjectNotExists(`${idIoLink}.vendorid`, {
-            type: 'state',
-            common: {
-                name: 'Vendor ID',
-                role: 'value',
-                type: 'string',
-                value: vendorid,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idIoLink}.vendorid`, vendorid, true);
-
-
-        adapter.setObjectNotExists(`${idIoLink}.sensorid`, {
-            type: 'state',
-            common: {
-                name: 'Sensor ID',
-                role: 'value',
-                type: 'string',
-                value: sensorid,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idIoLink}.sensorid`, sensorid, true);
-
-
-        let serialnumber = await getValue(endpoint, requestDeviceSn);
-
-        adapter.setObjectNotExists(`${idIoLink}.serialnumber`, {
-            type: 'state',
-            common: {
-                name: 'Serial number',
-                role: 'value',
-                type: 'string',
-                value: serialnumber,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idIoLink}.serialnumber`, serialnumber, true);
-
 
         //###############################################################################
         //Master process data
 
-        let masterStatus = '';
-        switch (await getValue(endpoint, requestMasterStatus)) {
-            case 0:
-                masterStatus = 'OK';
-                break;
-            case 1:
-                masterStatus = 'Fault';
-                break;
-        }
-
-        adapter.setObjectNotExists(`${idMasterProcessData}.status`, {
-            type: 'state',
-            common: {
-                name: 'Supervision status',
-                role: 'info.status',
-                type: 'string',
-                value: masterStatus,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterProcessData}.status`, masterStatus, true);
-
-
-        let current = await getValue(endpoint, requestMasterCurrent);
-
-        let currentUnit = await getValue(endpoint, requestMasterCurrentUnit);
-
-        adapter.setObjectNotExists(`${idMasterProcessData}.current`, {
-            type: 'state',
-            common: {
-                name: 'Current',
-                role: 'value.current',
-                type: 'number',
-                unit: currentUnit,
-                value: current,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterProcessData}.current`, current, true);
-
-
-        let temperature = await getValue(endpoint, requestMasterTemperature);
-
-        let temperatureUnit = await getValue(endpoint, requestMasterTemperatureUnit);
-
-        adapter.setObjectNotExists(`${idMasterProcessData}.temperature`, {
-            type: 'state',
-            common: {
-                name: 'Temperature',
-                role: 'value.temperature',
-                type: 'number',
-                unit: temperatureUnit,
-                value: temperature,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterProcessData}.temperature`, temperature, true);
-
-
-        let voltage = await getValue(endpoint, requestMasterVoltage);
-
-        let voltageUnit = await getValue(endpoint, requestMasterVoltageUnit);
-
-        adapter.setObjectNotExists(`${idMasterProcessData}.voltage`, {
-            type: 'state',
-            common: {
-                name: 'Voltage',
-                role: 'value.voltage',
-                type: 'number',
-                unit: voltageUnit,
-                value: voltage,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterProcessData}.voltage`, voltage, true);
-
-
-        let bootloaderRev = await getValue(endpoint, requestMasterBootloaderRevision)
-
-        adapter.setObjectNotExists(`${idMasterInfo}.bootloaderrev`, {
-            type: 'state',
-            common: {
-                name: 'Bootloader revision',
-                role: 'value',
-                type: 'string',
-                value: bootloaderRev,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterInfo}.bootloaderrev`, bootloaderRev, true);
-
-
-        let hardwareRev = await getValue(endpoint, requestMasterHardwareRevision);
-
-        adapter.setObjectNotExists(`${idMasterInfo}.hardwarerev`, {
-            type: 'state',
-            common: {
-                name: 'Hardware revision',
-                role: 'value',
-                type: 'string',
-                value: hardwareRev,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterInfo}.hardwarerev`, hardwareRev, true);
-
-
-        let mac = await getValue(endpoint, requestMasterMac);
-
-        adapter.setObjectNotExists(`${idMasterInfo}.mac`, {
-            type: 'state',
-            common: {
-                name: 'MAC',
-                role: 'info.mac',
-                type: 'string',
-                value: mac,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterInfo}.mac`, mac, true);
-
-
-        let softwareRev = await getValue(endpoint, requestMasterSoftwareRevision);
-
-        adapter.setObjectNotExists(`${idMasterInfo}.softwarerev`, {
-            type: 'state',
-            common: {
-                name: 'Software revision',
-                role: 'value',
-                type: 'string',
-                value: softwareRev,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterInfo}.softwarerev`, softwareRev, true);
-
-
-        let masterSerial = await getValue(endpoint, requestMasterSerial);
-
-        adapter.setObjectNotExists(`${idMasterInfo}.serial`, {
-            type: 'state',
-            common: {
-                name: 'Serial number',
-                role: 'value',
-                type: 'string',
-                value: masterSerial,
-                read: true,
-                write: false
-            }
-        });
-        adapter.setState(`${idMasterInfo}.serial`, masterSerial, true);
 
 
         adapter.log.info('IO-Link adapter - fetching data completed');
@@ -695,7 +399,7 @@ const getData = async (endpoint, iolinkport) => {
         adapter.stop();
 
     } catch (error) {
-        adapter.log.info('IO-Link adapter - ERROR: ' + error);
+        adapter.log.info('3 IO-Link adapter - ERROR: ' + error);
         adapter.log.error(error);
         adapter.stop();
     }
@@ -780,38 +484,6 @@ function generateStateObject(id, name, role, type, value, unit = '') {
  */
 function getRequestBody(adr) {
     return `{"code": "request", "cid": 1, "adr": "${adr}"}`;
-}
-
-//Convert a hex string to a byte array
-/**
- * @param {string} hexString
- */
-function hexToBytes(hexString) {
-    for (var bytes = [], c = 0; c < hexString.length; c += 2)
-        bytes.push(parseInt(hexString.substr(c, 2), 16));
-    return bytes;
-}
-
-//Convert a byte array to a number
-function byteArrayToNumber(byteArray) {
-    var value = 0;
-    for (var i = byteArray.length - 1; i >= 0; i--) {
-        value = (value * 256) + byteArray[i];
-    }
-
-    return value;
-}
-
-//Convert a byte array to a float32
-function byteArrayToFloat(byteArray) {
-    var buf = new ArrayBuffer(4);
-    var view = new DataView(buf);
-
-    byteArray.forEach(function (b, i) {
-        view.setUint8(i, b);
-    });
-
-    return view.getFloat32(0);
 }
 
 // is called when adapter shuts down
