@@ -253,6 +253,8 @@ const getData = async (endpoint, iolinkport) => {
         let tmpVorlauf = 0;
         let tmpRuecklauf = 0;
         let tmpDelta = 0;
+try {
+
 
 
 
