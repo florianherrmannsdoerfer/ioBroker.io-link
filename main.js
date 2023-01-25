@@ -1,4 +1,5 @@
 'use strict';
+import fetch from "node-fetch";
 
 // The adapter-core module gives you access to the core ioBroker functions
 const utils = require('@iobroker/adapter-core');
