@@ -412,12 +412,15 @@ const getData = async (endpoint, iolinkport) => {
 }
 
 const getValue = async (endpoint, request) => {
+    adapter.log.debug('hello im axios');
+
     var res = await axios({
         method: 'post',
         url: `http://${endpoint}`,
         data: request,
         headers: {'content-type': 'application/json'}
     });
+    adapter.log.debug('who called? axios');
     return res.data['data']['value'];
 }
 
