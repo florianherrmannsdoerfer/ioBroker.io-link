@@ -143,6 +143,7 @@ const getPortData = async (/** @type {string} */ endpoint, /** @type {number} */
 const getData = async (endpoint, iolinkport) => {
     try {
         try { //sensor info and process data requests
+            adapter.log.info('in the beginning');
             let requestSensorName = getRequestBody(`/iolinkmaster/port[${iolinkport}]/iolinkdevice/productname/getdata`);
 
             //master info and process data requests
