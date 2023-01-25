@@ -411,22 +411,32 @@ const getData = async (endpoint, iolinkport) => {
     }
 }
 
-const getValue = async (endpoint, request) => {
-    adapter.log.debug('hello im axios');
-    endpoint = endpoint + ':80';
-    var res = await axios({
-        method: 'post',
-        url: `http://${endpoint}`,
-        timeout: 8000,
-        data: request,
-        headers: {'content-type': 'application/json'}
-    }).then((response) => {
-        adapter.log.debug(response);
-    }).catch(function (error) {
-        adapter.log.debug(error);
+// const getValue = async (endpoint, request) => {
+//     adapter.log.debug('hello im axios');
+//     endpoint = endpoint + ':80';
+//     var res = await axios({
+//         method: 'post',
+//         url: `http://${endpoint}`,
+//         timeout: 8000,
+//         data: request,
+//         headers: {'content-type': 'application/json'}
+//     }).then((response) => {
+//         adapter.log.debug(response);
+//     }).catch(function (error) {
+//         adapter.log.debug(error);
+//     });
+//     adapter.log.debug('who called? axios');
+//     return res.data['data']['value'];
+// }
+
+async function getValue(endpoint, request){
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: request
     });
-    adapter.log.debug('who called? axios');
-    return res.data['data']['value'];
+    const content = await response.json();
+    adapter.log.debug(content);
 }
 
 /**
