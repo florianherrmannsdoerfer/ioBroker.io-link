@@ -413,14 +413,14 @@ const getData = async (endpoint, iolinkport) => {
 
 const getValue = async (endpoint, request) => {
     adapter.log.debug('hello im axios');
-
+    endpoint = endpoint + ':80';
     var res = await axios({
         method: 'post',
         url: `http://${endpoint}`,
         timeout: 8000,
         data: request,
         headers: {'content-type': 'application/json'}
-    }).catch(function (error){
+    }).catch(function (error) {
         adapter.log.debug(error);
     });
     adapter.log.debug('who called? axios');
