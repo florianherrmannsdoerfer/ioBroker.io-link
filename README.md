@@ -1,4 +1,4 @@
-<img src="admin/logo.png" alt="IO-Link Logo" width="150" height="150" />
+<img src="../iolink-adapter/ioBroker.iolink/admin/logo.png" alt="IO-Link Logo" width="150" height="150" />
 
 # ioBroker.io-link
 
