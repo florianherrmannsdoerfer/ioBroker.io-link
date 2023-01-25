@@ -148,7 +148,7 @@ const getData = async (endpoint, iolinkport) => {
             adapter.log.info('in the requestSensorName');
             //master info and process data requests
             let requestMasterName = getRequestBody(`/deviceinfo/productcode/getdata`);
-            adapter.log.info('in the requestMasterName');
+            adapter.log.info(requestMasterName + '     ' + endpoint);
 
             let masterDeviceName = await getValue(endpoint, requestMasterName);
             adapter.log.info('request names');
