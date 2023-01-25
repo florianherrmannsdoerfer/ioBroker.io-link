@@ -151,6 +151,7 @@ const getData = async (endpoint, iolinkport) => {
 
 
             let masterDeviceName = await getValue(endpoint, requestMasterName);
+            adapter.log.info('request names');
 
             let availablPorts = 0;
             switch (masterDeviceName) {
