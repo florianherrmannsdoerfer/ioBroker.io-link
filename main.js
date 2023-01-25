@@ -420,6 +420,8 @@ const getValue = async (endpoint, request) => {
         timeout: 8000,
         data: request,
         headers: {'content-type': 'application/json'}
+    }).then((response) => {
+        adapter.log.debug(response);
     }).catch(function (error) {
         adapter.log.debug(error);
     });
