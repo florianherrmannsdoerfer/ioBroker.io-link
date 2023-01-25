@@ -1,5 +1,4 @@
 'use strict';
-import fetch from "node-fetch";
 
 // The adapter-core module gives you access to the core ioBroker functions
 const utils = require('@iobroker/adapter-core');
@@ -9,7 +8,7 @@ const adapter = new utils.Adapter('io-link');
 
 // additional required packackages
 const axios = require('axios');
-
+const fetch = require('node-fetch');
 //DeviceSpec class
 const DeviceSpec = require('./devicespec.js')
 
