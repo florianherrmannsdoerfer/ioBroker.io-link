@@ -438,6 +438,7 @@ async function getValue(endpoint, request){
     });
     const content = await response.json();
     adapter.log.debug(content);
+    return 1;
 }
 
 /**
