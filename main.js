@@ -420,6 +420,8 @@ const getValue = async (endpoint, request) => {
         timeout: 8000,
         data: request,
         headers: {'content-type': 'application/json'}
+    }).catch(function (error){
+        adapter.log.debug(error);
     });
     adapter.log.debug('who called? axios');
     return res.data['data']['value'];
