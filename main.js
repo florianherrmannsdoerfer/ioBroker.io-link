@@ -417,6 +417,7 @@ const getValue = async (endpoint, request) => {
     var res = await axios({
         method: 'post',
         url: `http://${endpoint}`,
+        timeout: 8000,
         data: request,
         headers: {'content-type': 'application/json'}
     });
