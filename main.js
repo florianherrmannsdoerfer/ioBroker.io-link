@@ -8,6 +8,7 @@ const adapter = new utils.Adapter('io-link');
 
 // additional required packackages
 const axios = require('axios');
+const fetch = require('node-fetch');
 
 //DeviceSpec class
 const DeviceSpec = require('./devicespec.js')

@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^2.4.0",
-    "axios": "^1.2.4"
+    "axios": "^1.2.4",
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
     "@iobroker/testing": "^2.2.0",
