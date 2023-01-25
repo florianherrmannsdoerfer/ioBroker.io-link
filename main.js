@@ -230,6 +230,7 @@ const getData = async (endpoint, iolinkport) => {
 
             var idProcessData = `${idSensor}.processdata`;
 
+            adapter.log.info('Before sensor map');
 
             let tmpVorlauf = 0;
             let tmpRuecklauf = 0;
@@ -242,7 +243,10 @@ const getData = async (endpoint, iolinkport) => {
                 sensorPortMap.set(sensorPort, await getValue(endpoint, requestSensorId));
             }
 
+            adapter.log.info('after sensor map');
+
             for (let [sensorPort, sensorId] of sensorPortMap) {
+                adapter.log.info('Beginning calculate values ' + sensorPort);
                 let bytes = await getValue(endpoint, getRequestBody(`/iolinkmaster/port[${sensorPort}]/iolinkdevice/pdin/getdata`));
 
                 if (sensorId === 135) {//let out1Value = (bytes[7] & 0x01) === 0x01;
@@ -362,7 +366,10 @@ const getData = async (endpoint, iolinkport) => {
                     });
                     adapter.setState(`${idProcessData}.temperatureRuecklauf`, temperatureRuecklauf, true);
                 }
+                adapter.log.info('end calculating ' + sensorPort);
             }
+
+            adapter.log.info('after calculate for loop');
 
             tmpDelta = tmpRuecklauf - tmpVorlauf;
 
