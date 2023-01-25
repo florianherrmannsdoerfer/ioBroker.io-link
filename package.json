@@ -55,5 +55,6 @@
   "bugs": {
     "url": "https://github.com/100prznt/ioBroker.io-link"
   },
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "type": "module"
 }
